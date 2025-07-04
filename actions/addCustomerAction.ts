@@ -4,32 +4,42 @@ import { revalidatePath } from "next/cache";
 
 type Customer = {
   name: string,
-  address: string,
-  mail: string
+  street: string,
+  plz: string,
+  mail: string,
+  tel: string
 }
 
 export const addCustomer = async (formData: FormData) => {
   const name = formData.get("Name");
-  const address = formData.get("Address");
+  const street = formData.get("Strasse");
+  const plz = formData.get("PLZ")
   const mail = formData.get("Mail");
+  const tel = formData.get("Tel");
 
  await new Promise(resolve => setTimeout(resolve, 1000));
 
   if (
     typeof name !== "string" ||
     !name ||
-    typeof address !== "string" ||
-    !address ||
+    typeof street !== "string" ||
+    !street ||
+    typeof plz !== "string" ||
+    !plz ||
     typeof mail !== "string" ||
-    !mail
+    !mail ||
+    typeof tel !== "string" || 
+    !tel
   ) {
     throw new Error("Missing or invalid customer data.");
   }
 
   const newCustomer: Customer = {
     name: name,
-    address: address,
+    street: street,
+    plz: plz,
     mail: mail,
+    tel: tel
   };
 
   await prisma.customer.create({

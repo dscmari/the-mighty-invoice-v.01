@@ -14,7 +14,8 @@ export default async function DisplayAddedlatestCustomer() {
       <ol key={latestCustomer?.id}>
         <li className="mb-2">Id: {latestCustomer?.id}</li>
         <li className="mb-2">Name: {latestCustomer?.name}</li>
-        <li className="mb-2">Adresse: {latestCustomer?.address}</li>
+        <li className="mb-2">Adresse: {latestCustomer?.street}</li>
+        <li className="mb-2">Adresse: {latestCustomer?.plz}</li>
         <li className="mb-2">Mail: {latestCustomer?.mail}</li>
       </ol>
     </div>

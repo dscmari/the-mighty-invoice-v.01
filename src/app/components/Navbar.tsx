@@ -27,12 +27,17 @@ export default function Page() {
         <ul className="flex gap-4">
           <li>
             <Link href={"/Customer"}>
-              <p className={getLinkClasses("/Customer")}>Customer</p>
+              <p>Customer</p>
+            </Link>
+          </li>
+                    <li>
+            <Link href={"/Lessons"}>
+              <p>Lessons</p>
             </Link>
           </li>
           <li>
             <Link href={"/Invoice"}>
-              <p className={getLinkClasses("/Invoice")}>Invoice</p>
+              <p>Invoice</p>
             </Link>
           </li>
         </ul>

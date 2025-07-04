@@ -11,6 +11,16 @@ datasource db {
 model Customer {
   id        Int      @id @default(autoincrement())
   name      String   @db.VarChar(255)
-  address   String   @db.VarChar(255)
+  street    String   @db.VarChar(255)
+  plz       String   @db.VarChar(255) 
   mail      String   @unique 
+  tel       String   @db.VarChar(255)
+  lessons   Lesson[]
+}
+
+model Lesson {
+  id        Int      @id @default(autoincrement())
+  student   Customer @relation(fields: [studentId], references: [id])
+  studentId Int
+  date      DateTime  
 }

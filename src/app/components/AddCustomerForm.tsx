@@ -1,11 +1,11 @@
 "use client";
 import React from "react";
 import { addCustomer } from "../../../actions/addCustomerAction";
-import AddCustomerButton from "./AddCustomerButton";
+import AddCustomerButton from "./buttons/AddCustomerButton";
 
 
 export default function AddCustomerForm() {
-  const fields = ["Name", "Address", "Mail"];
+  const fields = ["Name", "Strasse", "PLZ", "Mail", "Tel"];
 
   return (
     <div>
