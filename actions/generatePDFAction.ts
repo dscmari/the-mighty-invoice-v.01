@@ -2,7 +2,30 @@
 import prisma from "@/lib/prisma";
 import puppeteer from "puppeteer";
 
+type Invoice = {
+    invoiceNumber: string,
+    customerId: number,
+    createdAt: Date, 
+} | null
+
 export const generateInvoice = async (formData: FormData) => {
+
+  //helper functions
+  function parseDate(date : Date): string {
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+    const year = date.getFullYear();
+    return `${day}.${month}.${year}`;
+  }
+  function incrementInvoiceNumber(s: string){
+    const parts = s.split('_'); // Result: ["01", "2025"]
+    const invoiceString = parts[0]; 
+    const year = parts[1]; 
+    const invoiceNumber = parseInt(invoiceString, 10)
+    const newNumber = (invoiceNumber + 1);
+    return String(newNumber).padStart(2, '0') + "_" + year
+  } 
+
   //customer
   const customerIdString = formData.get("customerId");
   const customerId = parseInt(customerIdString!.toString());
@@ -26,6 +49,45 @@ export const generateInvoice = async (formData: FormData) => {
     },
   });
 
+  //invoice
+  const latestInvoice = await prisma.invoice.findFirst({
+    orderBy: {
+        id: 'desc',
+    },
+  })
+  const currentYear = new Date().getFullYear()
+  const getInvoiceNumber = (latestInvoice: Invoice) => {
+    if(latestInvoice?.createdAt.getFullYear() === currentYear) {
+        return incrementInvoiceNumber(latestInvoice.invoiceNumber)
+    }
+    else {
+        return "01_" + currentYear 
+    }
+  }
+
+  let invoiceNumber;
+  if(latestInvoice) {
+    invoiceNumber = getInvoiceNumber(latestInvoice)
+  } else {
+    invoiceNumber = "01_" + currentYear //no database entries yet
+  }
+
+  const newInvoice: Invoice = {
+    invoiceNumber: invoiceNumber,
+    customerId: customerId,
+    createdAt: new Date()
+  }
+
+  await prisma.invoice.create({
+    data: newInvoice
+  })
+
+
+  //date
+  const newDate = new Date()
+  const date = parseDate(newDate)
+
+
   const description = "Gemeinsames Programmieren";
   const totalLessons = 1;
   const price = 40;
@@ -33,15 +95,6 @@ export const generateInvoice = async (formData: FormData) => {
   const marianInfo = "Marian Nökel | Webendwicklung | Steuernummer: 146/110/71311"
   const namasteInfo = "Tel.:  015231432433 | Mail: noekel@namaste-websites.de | www.namaste-websites.de"
 
-  //date
-  function parseDate(date : Date): string {
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
-    const year = date.getFullYear();
-    return `${day}.${month}.${year}`;
-  }
-  const newDate = new Date()
-  const date = parseDate(newDate)
 
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
@@ -150,7 +203,7 @@ export const generateInvoice = async (formData: FormData) => {
                 </div>
             </div>
             <div>
-                <p>Datum: ${date} / Rechnungsnummer: X</p>
+                <p>Datum: ${date} / Rechnungsnummer: INV-${invoiceNumber}</p>
             </div>
             <table>
                 <thead>
