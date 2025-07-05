@@ -12,6 +12,8 @@ export const generateInvoice = async (formData: FormData) => {
     },
   });
   const customerName = customer?.name;
+  const customerStreet = customer?.street;
+  const customerPLZ = customer?.plz;
 
   //lessons
   const lessonIdsString = formData.getAll("lessonIds");
@@ -24,11 +26,22 @@ export const generateInvoice = async (formData: FormData) => {
     },
   });
 
-  const description = "Programmiereinheit 60 Min"
+  const description = "Gemeinsames Programmieren";
   const totalLessons = 1;
   const price = 40;
-  const totalPrice = lessons.length * price 
+  const totalPrice = lessons.length * price;
+  const marianInfo = "Marian Nökel | Webendwicklung | Steuernummer: 146/110/71311"
+  const namasteInfo = "Tel.:  015231432433 | Mail: noekel@namaste-websites.de | www.namaste-websites.de"
 
+  //date
+  function parseDate(date : Date): string {
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+    const year = date.getFullYear();
+    return `${day}.${month}.${year}`;
+  }
+  const newDate = new Date()
+  const date = parseDate(newDate)
 
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
@@ -38,13 +51,13 @@ export const generateInvoice = async (formData: FormData) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Rechnung - </title>
+        <title>Rechnung</title>
         <style>
             body {
                 font-family: 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
                 margin: 0;
                 padding: 2cm;
-                line-height: 1.6;
+                line-height: 1.4;
                 color: #333;
                 background-color: #f9f9f9;
                 font-size: 10pt;
@@ -54,63 +67,36 @@ export const generateInvoice = async (formData: FormData) => {
                 max-width: 21cm; /* A4 width */
                 margin: 0 auto;
                 background-color: #fff;
-                padding: 2cm;
+                padding: 0 2cm 0 2cm;
                 border: 1px solid #eee;
                 box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+            }
+
+            .company-info {
+               display: flex;
+               align-items: flex-start;
+               font-weight: 300;
             }
 
             .header {
                 display: flex;
                 justify-content: space-between;
                 align-items: flex-start;
-                margin-bottom: 40px;
+                margin-bottom: 2rem;
             }
 
             .header h1 {
                 color: #333;
-                font-size: 24pt;
+                font-size: 16pt;
                 margin: 0;
-                line-height: 1;
+                margin-bottom: 1rem;
+                line-height: 0.8;
             }
 
-            .company-info {
-                text-align: right;
-                font-size: 9pt;
-            }
-
-            .company-info p {
-                margin: 0;
-            }
-
-            .address-block {
-                margin-bottom: 30px;
-                padding: 15px;
-                border: 1px solid #eee;
-                background-color: #fcfcfc;
-                border-radius: 4px;
-            }
-
-            .address-block p {
-                margin: 0;
-            }
-
-            .invoice-details {
-                display: flex;
-                justify-content: space-between;
-                margin-bottom: 30px;
-                font-size: 10pt;
-            }
-
-            .invoice-details div p {
-                margin: 0;
-            }
-
-            .invoice-details .left-details {
-                flex-grow: 1;
-            }
-
-            .invoice-details .right-details {
-                text-align: right;
+            ul {
+                list-style: none;
+                margin-left: 0;
+                padding-left: 0;
             }
 
             table {
@@ -123,7 +109,6 @@ export const generateInvoice = async (formData: FormData) => {
             th, td {
                 border: 1px solid #ddd;
                 padding: 10px;
-                text-align: left;
                 font-size: 9pt;
             }
 
@@ -136,10 +121,6 @@ export const generateInvoice = async (formData: FormData) => {
                 text-align: right;
             }
 
-            .text-center {
-                text-align: center;
-            }
-
             .totals-table {
                 width: 40%; /* Adjust as needed */
                 margin-left: auto; /* Aligns to the right */
@@ -147,83 +128,75 @@ export const generateInvoice = async (formData: FormData) => {
                 margin-top: 20px;
             }
 
-            .totals-table th, .totals-table td {
-                border: none;
-                padding: 5px 10px;
-                text-align: right;
-            }
-
-            .totals-table tr.subtotal td,
-            .totals-table tr.vat td {
-                border-bottom: 1px solid #eee;
-            }
-
-            .totals-table tr.total th,
-            .totals-table tr.total td {
-                font-size: 11pt;
-                font-weight: bold;
-                border-top: 2px solid #333;
-                padding-top: 10px;
-            }
-
-            .footer {
-                margin-top: 50px;
-                text-align: center;
-                font-size: 8pt;
-                color: #777;
-                border-top: 1px solid #eee;
-                padding-top: 20px;
-            }
-
-            .bank-details p {
-                margin: 5px 0;
+            .regards {
+                margin-top: 1rem;
+                margin-bottom:0.5rem;
             }
         </style>
     </head>
     <body>
+     
         <div class="container">
+          <p class="company-info" style="margin-bottom: 0;">${marianInfo}</p>
+          <p class="company-info" style="margin-bottom: 2rem; margin-top: 0;">${namasteInfo}</p>
             <div class="header">
                 <div>
                     <h1>Rechnung</h1>
-                    ${customerName}
+                    <ul>
+                        <li>${customerName}</li>
+                        <li>${customerStreet}</li>
+                        <li>${customerPLZ}</li>
+                    </ul>
                 </div>
-
             </div>
-
-
-
+            <div>
+                <p>Datum: ${date} / Rechnungsnummer: X</p>
+            </div>
             <table>
                 <thead>
                     <tr>
-                        <th>Position</th>
-                        <th>Beschreibung</th>
+                        <th class="text-right">Pos.</th>
+                        <th class="text-right">Beschreibung</th>
+                        <th class="text-right">Datum</th>
                         <th class="text-right">Menge</th>
-                        <th class="text-right">Einzelpreis</th>
+                        <th class="text-right">Preis</th>
                         <th class="text-right">Gesamt</th>
                     </tr>
                 </thead>
                 <tbody>
-                ${lessons.map((lesson) => {
-                    return `
-                    <tr>
-                        <td>${lessons.indexOf(lesson) + 1}</td>
-                        <td>${description}</td>
-                        <td class="text-right">${totalLessons}</td>
-                        <td class="text-right">${price}</td>
-                        <td class="text-right">${totalLessons * price}</td>
-                    </tr>`
-                })}
+                    ${lessons.map((lesson) => {
+                        return `
+                            <tr>
+                                <td class="text-right">${lessons.indexOf(lesson) + 1}</td>
+                                <td class="text-right">${description}</td>
+                                <td class="text-right">${parseDate(lesson.date)}</td>
+                                <td class="text-right">${totalLessons}</td>
+                                <td class="text-right">${price}€</td>
+                                <td class="text-right">${totalLessons * price}€</td>
+                            </tr>`
+                    }).join('')}
    
                 </tbody>
             </table>
 
             <table class="totals-table">
                 <tr class="subtotal">
-                    <th>Netto Gesamt:</th>
-                    <td> ${totalPrice}€</td>
+                    <th class="text-right">Netto Gesamt:</th>
+                    <td class="text-right"> ${totalPrice}€</td>
                 </tr>
        
-            </div>
+            </table>
+            <p>
+                Ich bin Kleinunternehmer und somit nach §19 Abs. 1 UStG nicht mehrwertsteuerpflichtig, weshalb ich keinen USt-Ausweis habe. Bitte überweisen Sie den Betrag innerhalb von 14 Tagen auf folgendes Konto:
+            </p>
+            <ul style="line-height: 1.1; margin-top: 1.5rem; margin-bottom: 1.5rem;">
+                <li>Marian Nökel</li>
+                <li>N26 Bank AG</li>
+                <li>IBAN: DE28 1001 1001 2627 3824 38</li>
+                <li>BIC: NTSBDEB1XXX</li>
+            </ul>
+            <p class="regards">Mit freundlichen Grüßen</p>
+            <p style="margin-bottom: 2rem;">Marian Nökel</p>
         </div>
     </body>
     </html>
