@@ -37,9 +37,9 @@ export default function Page({ customers }: CustomerProps) {
         <form
           action={generateInvoice}
           key={customer.id}
-          className="flex gap-8 bg-slate-100 p-4 md:min-w-60"
+          className="flex items-start m-4 gap-8 bg-slate-100 p-4 md:min-w-60"
         >
-          <div>
+          <div className="flex-[0_0_30%]">
             <ol>
               <li className="mb-2">Id: {customer.id}</li>
               <li className="mb-2">Name: {customer.name}</li>
@@ -48,22 +48,21 @@ export default function Page({ customers }: CustomerProps) {
               <li className="mb-2">Mail: {customer.mail}</li>
             </ol>
           </div>
-          <div>
+          <div className="flex-[0_0_40%]">
             <p> Stunden</p>
             {customer.lessons.map((lesson: Lesson) => (
               <ol
                 key={lesson.id}
-                className={`flex gap-2 border-b py-1 relative ${
-                  lessonIds.includes(lesson.id.toString()) ? "bg-red-500" : "bg-transparent"
+                className={`flex gap-4 border-b p-1 relative hover:bg-orange-200 ${
+                  lessonIds.includes(lesson.id.toString()) ? "bg-orange-300" : "bg-transparent"
                 }`}
               >
-                <li>Date {lesson.date.toDateString()}</li>
-                <li>StudentId {lesson.studentId}</li>
+                <li>{lesson.date.toDateString()}</li>
                 <li>LessonId {lesson.id}</li>
                 <div className="absolute w-full h-full">
                   <label
                     htmlFor={`lesson-checkbox-${lesson.id}`}
-                    className={`w-full h-full absolute `}
+                    className="w-full h-full absolute cursor-pointer"
                   >
                     <input
                       type="checkbox"

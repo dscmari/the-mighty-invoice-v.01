@@ -17,11 +17,11 @@ export default function Page() {
   };
 
   return (
-    <nav className="bg-slate-100">
+    <nav className="">
       <div className="p-4 flex justify-between items-center">
         <Link href={"/"}>
           <div className="py-2 px-4">
-            <p className="text-xl">The Mighty Invoice</p>
+            <p className="text-xl font-bold text-[#71b572]">The Mighty Invoice</p>
           </div>
         </Link>
         <ul className="flex gap-4">

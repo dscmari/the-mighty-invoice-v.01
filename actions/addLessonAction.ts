@@ -10,6 +10,9 @@ type Lesson = {
 
 
 export const addLesson = async (formData: FormData) => {
+    
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
     const studentIdInput =  formData.get("customerId")
     const dateInput = formData.get("date")
 

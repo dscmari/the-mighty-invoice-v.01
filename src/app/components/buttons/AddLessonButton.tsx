@@ -10,9 +10,9 @@ export default function AddLessonButton() {
     <button
       form="add-lesson-form"
       type="submit"
-      className={`bg-white rounded py-2 px-4 my-8 m-auto cursor-pointer hover:shadow-md ${pending? "w-full" : "w-1/3"}`}
+      className="bg-white rounded border py-2 px-4 h-10 cursor-pointer hover:shadow-md w-44"
     >
-      {pending ? "Stunde wird hinzugefügt..." : "Hinzufügen"}
+      {pending ? "Hinzufügen..." : "Stunde hinzufügen"}
     </button>
   );
 }
