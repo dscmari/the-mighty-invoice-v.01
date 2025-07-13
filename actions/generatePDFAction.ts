@@ -73,7 +73,7 @@ export const generateInvoice = async (formData: FormData) => {
   const date = parseDate(newDate)
 
 
-  const description = "Gemeinsames Programmieren";
+  const description = "Programmierkurs";
   const totalLessons = 1;
   const price = 40;
   const totalPrice = lessons.length * price;
@@ -230,7 +230,7 @@ export const generateInvoice = async (formData: FormData) => {
             <ul style="line-height: 1.1; margin-top: 1.5rem; margin-bottom: 1.5rem;">
                 <li>Marian Nökel</li>
                 <li>N26 Bank AG</li>
-                <li>IBAN: DE28 1001 1001 2627 3824 38</li>
+                <li>IBAN: DE94 1001 1001 2587 6446 18</li>
                 <li>BIC: NTSBDEB1XXX</li>
             </ul>
             <p class="regards">Mit freundlichen Grüßen</p>

@@ -10,9 +10,9 @@ export default function AddCustomerButton() {
     <button
       form="add-customer-form"
       type="submit"
-      className={`bg-white rounded py-2 px-4 my-8 m-auto cursor-pointer hover:shadow-md ${pending? "w-full" : "w-1/3"}`}
+      className="mx-auto my-4 rounded py-2 px-4 h-10 w-44 cursor-pointer hover:shadow-md bg-[#71b572] font-semibold text-white"
     >
-      {pending ? "Kunde wird hinzugefügt" : "Hinzufügen"}
+      {pending ? "Adding..." : "ADD CUSTOMER"}
     </button>
   );
 }

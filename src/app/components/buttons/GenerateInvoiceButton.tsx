@@ -9,9 +9,9 @@ export default function GenerateInvoiceButton() {
   return (
     <button
       type="submit"
-      className="bg-white rounded my-auto py-2 px-4 cursor-pointer hover:shadow-md h-10 w-44 text-center"
+      className="bg-[#71b572] font-semibold text-white rounded my-auto py-2 px-4 cursor-pointer hover:shadow-md h-10 w-44 text-center"
     >
-      {pending ? "Erstellen..." : "Erstelle Rechnung"}
+      {pending ? "Generating..." : "CREATE INVOICE"}
     </button>
   );
 }

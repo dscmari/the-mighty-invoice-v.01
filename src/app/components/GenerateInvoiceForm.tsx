@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, {useState } from "react";
 import { generateInvoice } from "../../../actions/generatePDFAction";
 import GenerateInvoiceButton from "./buttons/GenerateInvoiceButton";
 import type { Lesson } from "../../types";
@@ -41,15 +41,13 @@ export default function Page({ customers }: CustomerProps) {
         >
           <div className="flex-[0_0_30%]">
             <ol>
-              <li className="mb-2">Id: {customer.id}</li>
-              <li className="mb-2">Name: {customer.name}</li>
-              <li className="mb-2">Strasse: {customer.street}</li>
-              <li className="mb-2">PLZ: {customer.plz}</li>
-              <li className="mb-2">Mail: {customer.mail}</li>
+              <li className="mb-2 font-semibold">{customer.name}</li>
+              <li className="mb-2">{customer.street}</li>
+              <li className="mb-2">{customer.plz}</li>
+              <li className="mb-2">{customer.mail}</li>
             </ol>
           </div>
-          <div className="flex-[0_0_40%]">
-            <p> Stunden</p>
+          <div>
             {customer.lessons.map((lesson: Lesson) => (
               <ol
                 key={lesson.id}
@@ -81,8 +79,10 @@ export default function Page({ customers }: CustomerProps) {
 
           {/* Hidden input to pass the customer ID with this form */}
           <input type="hidden" name="customerId" value={customer.id} />
-
-          <GenerateInvoiceButton />
+          <div className="ml-auto mr-4 my-auto">
+                 <GenerateInvoiceButton />
+            </div>  
+     
         </form>
       ))}
     </div>
