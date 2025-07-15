@@ -12,3 +12,12 @@ export type Lesson = {
     studentId: number,
     date: Date
 }
+
+export type Invoice = {
+  id : number;
+  invoiceNumber: string,
+  customerId: number,
+  createdAt: Date, 
+}   
+    
+export type CreateInvoice = Omit<Invoice, 'id'>

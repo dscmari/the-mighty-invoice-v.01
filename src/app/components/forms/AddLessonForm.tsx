@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
-import { addLesson } from "../../../actions/lessons/addLessonAction";
-import AddLessonButton from "./buttons/AddLessonButton";
-import type { Customer } from "../../types";
+import { addLesson } from "../../../../actions/lessons/addLessonAction";
+import AddLessonButton from "../buttons/AddLessonButton";
+import type { Customer } from "../../../utils/types";
 
 type CustomerProps = {
   customers: Customer[];

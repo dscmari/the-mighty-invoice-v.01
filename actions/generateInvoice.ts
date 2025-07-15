@@ -2,12 +2,8 @@
 import prisma from "@/lib/prisma";
 import puppeteer from "puppeteer";
 import { parseDate, incrementInvoiceNumber } from "@/utils/generate-pdf";
-
-type Invoice = {
-    invoiceNumber: string,
-    customerId: number,
-    createdAt: Date, 
-} | null
+import type { Invoice } from "@/utils/types";
+import type { CreateInvoice } from "@/utils/types";
 
 export const generateInvoice = async (formData: FormData) => {
 
@@ -34,12 +30,14 @@ export const generateInvoice = async (formData: FormData) => {
     },
   });
 
+
   //invoice
   const latestInvoice = await prisma.invoice.findFirst({
     orderBy: {
         id: 'desc',
     },
   })
+
   const currentYear = new Date().getFullYear()
   const getInvoiceNumber = (latestInvoice: Invoice) => {
     if(latestInvoice?.createdAt.getFullYear() === currentYear) {
@@ -57,7 +55,7 @@ export const generateInvoice = async (formData: FormData) => {
     invoiceNumber = "01_" + currentYear //no database entries yet
   }
 
-  const newInvoice: Invoice = {
+  const newInvoice: CreateInvoice = {
     invoiceNumber: invoiceNumber,
     customerId: customerId,
     createdAt: new Date()
@@ -66,7 +64,6 @@ export const generateInvoice = async (formData: FormData) => {
   await prisma.invoice.create({
     data: newInvoice
   })
-
 
   //date
   const newDate = new Date()

@@ -1,8 +1,8 @@
 import React from "react";
-import AddLessonForm from "../components/AddLessonForm";
+import AddLessonForm from "../components/forms/AddLessonForm";
 import prisma from "@/lib/prisma";
-import GenerateInvoiceForm from "../components/GenerateInvoiceForm"
-import AddCustomerForm from "../components/AddCustomerForm";
+import GenerateInvoiceForm from "../components/forms/StudentInvoiceForm"
+import AddCustomerForm from "../components/forms/AddCustomerForm";
 
 export default async function Page() {
   const customers = await prisma.customer.findMany({

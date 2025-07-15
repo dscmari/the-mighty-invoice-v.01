@@ -1,8 +1,8 @@
 "use client";
 import React, {useState } from "react";
-import { generateInvoice } from "../../../actions/generatePDFAction";
-import GenerateInvoiceButton from "./buttons/GenerateInvoiceButton";
-import type { Lesson } from "../../types";
+import { generateInvoice } from "../../../../actions/generateInvoice";
+import GenerateInvoiceButton from "../buttons/GenerateInvoiceButton";
+import type { Lesson } from "../../../utils/types";
 
 type Customer = {
   id: number;

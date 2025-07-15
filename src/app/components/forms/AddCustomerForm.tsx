@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
-import { addCustomer } from "../../../actions/addCustomerAction";
-import AddCustomerButton from "./buttons/AddCustomerButton";
+import { addCustomer } from "../../../../actions/addCustomerAction";
+import AddCustomerButton from "../buttons/AddCustomerButton";
 
 export default function AddCustomerForm() {
   const [isActive, setIsActive] = useState(false);

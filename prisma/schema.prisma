@@ -24,8 +24,6 @@ model Lesson {
   student   Customer @relation(fields: [studentId], references: [id])
   studentId Int
   date      DateTime
-  invoice   Invoice? @relation(fields: [invoiceId], references: [id])
-  invoiceId Int?
 }
 
 model Invoice {
@@ -33,6 +31,5 @@ model Invoice {
   invoiceNumber String    @unique
   customer   Customer  @relation(fields: [customerId], references: [id])
   customerId Int     
-  lessons    Lesson[]
   createdAt  DateTime  @default(now())
 }
