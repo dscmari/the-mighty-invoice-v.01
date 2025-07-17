@@ -20,7 +20,7 @@ export const generateInvoice = async (formData: FormData) => {
   const customerPLZ = customer?.plz;
 
   //lessons
-  const lessonIdsString = formData.getAll("lessonIds");
+  const lessonIdsString = formData.getAll("lessonIds"); //returns [] when no lessonIds exist in form
   const lessonIds = lessonIdsString.map((e) => parseInt(e!.toString()));
   const lessons = await prisma.lesson.findMany({
     where: {
@@ -30,53 +30,90 @@ export const generateInvoice = async (formData: FormData) => {
     },
   });
 
+  //type of invoice
+  const isStudentLesson = lessons.length > 0
+
+  //namasteItems
+  const descriptions = formData.getAll("description");
+  const rows = Array.from({ length: descriptions.length });
+  const datesAsStrings = formData.getAll("date");
+  const dates: Date[] = datesAsStrings
+    .filter((value): value is string => typeof value === "string") // Filters out File objects, leaving only strings
+    .map((dateString: string) => {
+      // Now dateString is guaranteed to be a string
+      return new Date(dateString);
+    });
+  const quantities = formData
+    .getAll("quantity")
+    .filter((value): value is string => typeof value === "string")
+    .map((quantitiy) => {
+      return parseInt(quantitiy);
+    });
+  const prices = formData
+    .getAll("price")
+    .filter((value): value is string => typeof value === "string")
+    .map((price) => {
+      return parseFloat(price);
+    });
+
+  const rowTotals = quantities.map((quantity, index) => {
+    const price = prices[index]; // Get corresponding price
+
+    // Ensure both are valid numbers before multiplication
+    if (!isNaN(quantity) && !isNaN(price)) {
+      return quantity * price;
+    }
+    return 0; // Return 0 if either is not a valid number
+  });
+
+  const totalPriceNamasteInvoice = rowTotals.reduce((sum, currentTotal) => sum + currentTotal, 0);
 
   //invoice
   const latestInvoice = await prisma.invoice.findFirst({
     orderBy: {
-        id: 'desc',
-    },
-  })
+      id: "desc"
+    }
+  });
 
-  const currentYear = new Date().getFullYear()
+  const currentYear = new Date().getFullYear();
   const getInvoiceNumber = (latestInvoice: Invoice) => {
-    if(latestInvoice?.createdAt.getFullYear() === currentYear) {
-        return incrementInvoiceNumber(latestInvoice.invoiceNumber)
+    if (latestInvoice?.createdAt.getFullYear() === currentYear) {
+      return incrementInvoiceNumber(latestInvoice.invoiceNumber);
+    } else {
+      return "01_" + currentYear;
     }
-    else {
-        return "01_" + currentYear 
-    }
-  }
+  };
 
   let invoiceNumber;
-  if(latestInvoice) {
-    invoiceNumber = getInvoiceNumber(latestInvoice)
+  if (latestInvoice) {
+    invoiceNumber = getInvoiceNumber(latestInvoice);
   } else {
-    invoiceNumber = "01_" + currentYear //no database entries yet
+    invoiceNumber = "01_" + currentYear; //no database entries yet
   }
 
   const newInvoice: CreateInvoice = {
     invoiceNumber: invoiceNumber,
     customerId: customerId,
     createdAt: new Date()
-  }
+  };
 
   await prisma.invoice.create({
     data: newInvoice
-  })
+  });
 
   //date
-  const newDate = new Date()
-  const date = parseDate(newDate)
+  const newDate = new Date();
+  const date = parseDate(newDate);
 
-
+  //constants
   const description = "Programmierkurs";
   const totalLessons = 1;
   const price = 40;
-  const totalPrice = lessons.length * price;
-  const marianInfo = "Marian Nökel | Webendwicklung | Steuernummer: 146/110/71311"
-  const namasteInfo = "Tel.:  015231432433 | Mail: noekel@namaste-websites.de | www.namaste-websites.de"
-
+  const totalPriceStudentLessons = lessons.length * price;
+  const marianInfo =
+    "Marian Nökel | Webendwicklung | Steuernummer: 146/110/71311";
+  const namasteInfo =
+    "Tel.:  015231432433 | Mail: noekel@namaste-websites.de | www.namaste-websites.de";
 
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
@@ -185,7 +222,6 @@ export const generateInvoice = async (formData: FormData) => {
                 </div>
             </div>
             <div>
-                <p>Datum: ${date} / Rechnungsnummer: INV-${invoiceNumber}</p>
             </div>
             <table>
                 <thead>
@@ -199,25 +235,59 @@ export const generateInvoice = async (formData: FormData) => {
                     </tr>
                 </thead>
                 <tbody>
-                    ${lessons.map((lesson) => {
-                        return `
+                    ${
+                      isStudentLesson
+                        ? lessons
+                            .map((lesson) => {
+                              return `
                             <tr>
-                                <td class="text-right">${lessons.indexOf(lesson) + 1}</td>
+                                <td class="text-right">${
+                                  lessons.indexOf(lesson) + 1
+                                }</td>
                                 <td class="text-right">${description}</td>
-                                <td class="text-right">${parseDate(lesson.date)}</td>
+                                <td class="text-right">${parseDate(
+                                  lesson.date
+                                )}</td>
                                 <td class="text-right">${totalLessons}</td>
                                 <td class="text-right">${price}€</td>
-                                <td class="text-right">${totalLessons * price}€</td>
+                                <td class="text-right">${
+                                  totalLessons * price
+                                }€</td>
                             </tr>`
-                    }).join('')}
-   
+                            })
+                            .join("")
+                        : rows.map((row, index) => {
+                            return `
+                            <tr>
+                                <td class="text-right">${
+                                  index + 1
+                                }</td>
+                                <td class="text-right">${
+                                  descriptions[index]
+                                }</td>
+                                <td class="text-right">${parseDate(
+                                  dates[index]
+                                )}</td>
+                                <td class="text-right">${
+                                  quantities[index]
+                                }</td>
+                                <td class="text-right">${
+                                  prices[index]
+                                }€</td>
+                                <td class="text-right">${
+                                  quantities[index] * prices[index]
+                                }€</td>
+                            </tr>`
+                          })
+                          .join("")
+                    }
                 </tbody>
             </table>
 
             <table class="totals-table">
                 <tr class="subtotal">
                     <th class="text-right">Netto Gesamt:</th>
-                    <td class="text-right"> ${totalPrice}€</td>
+                    <td class="text-right"> ${isStudentLesson ? totalPriceStudentLessons : totalPriceNamasteInvoice}€</td>
                 </tr>
        
             </table>
@@ -239,7 +309,7 @@ export const generateInvoice = async (formData: FormData) => {
   await page.setContent(content, {
     waitUntil: "networkidle0",
   });
-  
+
   await page.pdf({
     path: `invoices/INV-${invoiceNumber}.pdf`,
   });

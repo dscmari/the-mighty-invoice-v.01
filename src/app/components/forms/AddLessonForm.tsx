@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { addLesson } from "../../../../actions/lessons/addLessonAction";
+import { addLesson } from "../../../../actions/addLessonAction";
 import AddLessonButton from "../buttons/AddLessonButton";
 import type { Customer } from "../../../utils/types";
 
