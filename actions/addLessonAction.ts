@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 type Lesson = {
     studentId: number,
     date: Date
+    description: string
 }
 
 
@@ -15,12 +16,14 @@ export const addLesson = async (formData: FormData) => {
     
     const studentIdInput =  formData.get("customerId")
     const dateInput = formData.get("date")
+    const lessonDescription = formData.get("lessonDescription")
 
     if (
-        typeof studentIdInput !== "string" ||
-        !studentIdInput ||
-        typeof dateInput !== "string" ||
-        !dateInput
+        typeof studentIdInput !== "string" || !studentIdInput
+        ||
+        typeof dateInput !== "string" || !dateInput
+        ||
+        typeof lessonDescription !== "string"
     ) {
         throw new Error("Missing or invalid customer data.");
     }
@@ -30,7 +33,8 @@ export const addLesson = async (formData: FormData) => {
 
     const newLesson: Lesson = {
         studentId: studentId,
-        date: date
+        date: date,
+        description: lessonDescription
   };
 
     await prisma.lesson.create({

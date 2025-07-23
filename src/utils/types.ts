@@ -10,7 +10,8 @@ export type Customer = {
 export type Lesson = {
     id: number,
     studentId: number,
-    date: Date
+    date: Date,
+    description: string
 }
 
 export type Invoice = {

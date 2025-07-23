@@ -106,7 +106,6 @@ export const generateInvoice = async (formData: FormData) => {
   const date = parseDate(newDate);
 
   //constants
-  const description = "Programmierkurs";
   const totalLessons = 1;
   const price = 40;
   const totalPriceStudentLessons = lessons.length * price;
@@ -238,13 +237,11 @@ export const generateInvoice = async (formData: FormData) => {
                     ${
                       isStudentLesson
                         ? lessons
-                            .map((lesson) => {
+                            .map((lesson, index) => {
                               return `
                             <tr>
-                                <td class="text-right">${
-                                  lessons.indexOf(lesson) + 1
-                                }</td>
-                                <td class="text-right">${description}</td>
+                                <td class="text-right">${index + 1}</td>
+                                <td class="text-right">${lesson.description? lesson.description : "Programmierkurs"}</td>
                                 <td class="text-right">${parseDate(
                                   lesson.date
                                 )}</td>

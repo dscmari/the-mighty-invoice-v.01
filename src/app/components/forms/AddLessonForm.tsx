@@ -43,6 +43,10 @@ export default function AddLessonForm({ customers }: CustomerProps) {
             required
           />
         </div>
+        <div className="flex flex-col">
+          <label htmlFor="lesson-description">Description:</label>
+          <input type="text" id="lesson-descripton" name="lessonDescription" className="bg-white p-1 rounded" placeholder="Programmierkurs" />
+        </div>
       </div>
       <div className="ml-auto mr-4">
         <AddLessonButton />

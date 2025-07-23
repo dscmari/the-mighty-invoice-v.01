@@ -24,6 +24,7 @@ model Lesson {
   student   Customer @relation(fields: [studentId], references: [id])
   studentId Int
   date      DateTime
+  description String?
 }
 
 model Invoice {
