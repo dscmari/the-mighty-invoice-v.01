@@ -4,6 +4,8 @@ import type { Lesson } from "../../../utils/types";
 import GenerateInvoiceButton from "../buttons/GenerateInvoiceButton";
 import { generateInvoice } from "../../../../actions/generateInvoice";
 import { deleteLesson } from "../../../../actions/lessons/deleteLesson";
+import NoInvoiceLessons from "../NoInvoiceLessons";
+import TotalLessons from "../TotalLessons";
 
 type Customer = {
   id: number;
@@ -23,6 +25,12 @@ export default function Page({ customers }: CustomerProps) {
   const [lessonIds, setLessonIds] = useState<string[]>([]);
   const deleteRef = useRef<HTMLFormElement>(null);
   const hiddenLessonIdInputRef = useRef<HTMLInputElement>(null);
+  const [isTotalCustomerLessons, setIsTotalCustomerLessons] = useState(false);
+  const [openLessonId, setOpenLessonId] = useState<number | null>(null);
+
+  useEffect(() => {
+    console.log(lessonIds);
+  }, [lessonIds]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const checkedLessonId = event.target.value;
@@ -34,10 +42,7 @@ export default function Page({ customers }: CustomerProps) {
     }
   };
 
-  const handleDeleteLesson = (
-    e: React.MouseEvent<HTMLButtonElement>,
-    lessonId: number
-  ) => {
+  const handleDeleteLesson = (lessonId: number) => {
     console.log("handleDeleteLesson called");
     console.log(lessonId);
     //now i wnat the lesson id to be part of the data of the deleteRef form
@@ -47,9 +52,9 @@ export default function Page({ customers }: CustomerProps) {
     deleteRef.current?.requestSubmit();
   };
 
-  useEffect(() => {
-    console.log("new render after delete of lesson");
-  }, customers);
+  const toggleLessonOptions = (lessonId: number) => {
+    setOpenLessonId(prevId => (prevId === lessonId ? null : lessonId));
+  };
 
   return (
     <div>
@@ -68,54 +73,54 @@ export default function Page({ customers }: CustomerProps) {
             </ol>
           </div>
           <div>
+            <p className="pb-4">LESSONS</p>
+            <div className="flex gap-2 mb-2">
+              <button
+                type="button"
+                onClick={() => setIsTotalCustomerLessons(true)}
+                className={`px-2 border-1 w-28 ${
+                  isTotalCustomerLessons
+                    ? "text-blue-500 border-blue-500 font-semibold"
+                    : "text-slate-500 border-slate-500"
+                }`}
+              >
+                Total
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsTotalCustomerLessons(false)}
+                className={`px-2 border-1 w-28 ${
+                  isTotalCustomerLessons
+                    ? "text-slate-500 border-slate-500"
+                    : "text-blue-500 border-blue-500 font-semibold"
+                }`}
+              >
+                No Invoice
+              </button>
+            </div>
+
             {customer.lessons.map((lesson: Lesson) => (
-              <div className="flex" key={lesson.id}>
-                <ol
-                  className={`flex gap-4 border-b p-1 relative hover:bg-orange-200 ${
-                    lessonIds.includes(lesson.id.toString())
-                      ? "bg-orange-300"
-                      : "bg-transparent"
-                  }`}
-                >
-                  <li>{lesson.date.toDateString()}</li>
-                  <li>LessonId {lesson.id}</li>
-                  <div className="absolute w-full h-full">
-                    <label
-                      htmlFor={`lesson-checkbox-${lesson.id}`}
-                      className="w-full h-full absolute cursor-pointer"
-                    >
-                      <input
-                        type="checkbox"
-                        id={`lesson-checkbox-${lesson.id}`}
-                        checked={lessonIds.includes(lesson.id.toString())}
-                        value={lesson.id}
-                        onChange={handleChange}
-                        className="hidden"
-                        name="lessonIds"
-                      />
-                    </label>
-                  </div>
-                </ol>
-                <button
-                  onClick={(e) => handleDeleteLesson(e, lesson.id)}
-                  className="z-100 cursor-pointer"
-                  type="button"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth="2"
-                    stroke="currentColor"
-                    className="size-10 text-red-500 hover:bg-slate-200" // <--- Add this class
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M6 18 18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
+              <div key={lesson.id}>
+                {isTotalCustomerLessons ? (
+                  <TotalLessons
+                    lesson={lesson}
+                    lessonIds={lessonIds}
+                    handleChange={handleChange}
+                    handleDeleteLesson={handleDeleteLesson}
+                    showLessonOptions={openLessonId === lesson.id}
+                    handleShowLessonOptions = {() => toggleLessonOptions(lesson.id)}
+                  />
+                ) : (
+                  <NoInvoiceLessons
+                    lesson={lesson}
+                    lessonIds={lessonIds}
+                    handleChange={handleChange}
+                    handleDeleteLesson={handleDeleteLesson}
+                    showLessonOptions={openLessonId === lesson.id}
+                    handleShowLessonOptions = {() => toggleLessonOptions(lesson.id)}
+                  />
+                )}
               </div>
             ))}
           </div>
@@ -123,13 +128,11 @@ export default function Page({ customers }: CustomerProps) {
           {/* Hidden input to pass the customer ID with this form */}
           <input type="hidden" name="customerId" value={customer.id} />
           <div className="ml-auto mr-4 my-auto">
-            <GenerateInvoiceButton />
+            <GenerateInvoiceButton lessonIds={lessonIds} />
           </div>
         </form>
       ))}
       <form action={deleteLesson} ref={deleteRef}>
-        <p>test</p>
-
         <input type="hidden" name="lessonId" ref={hiddenLessonIdInputRef} />
         <button>submit</button>
       </form>

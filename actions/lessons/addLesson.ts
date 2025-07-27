@@ -27,7 +27,8 @@ export const addLesson = async (formData: FormData) => {
     const newLesson: AddLesson = {
         studentId: studentId,
         date: date,
-        description: lessonDescription
+        description: lessonDescription,
+        invoiceId: null
   };
 
     await prisma.lesson.create({

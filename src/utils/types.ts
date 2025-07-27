@@ -11,7 +11,8 @@ export type Lesson = {
     id: number,
     studentId: number,
     date: Date,
-    description: string | null
+    description: string | null,
+    invoiceId: number | null
 }
 export type AddLesson = Omit<Lesson, 'id'>
 
