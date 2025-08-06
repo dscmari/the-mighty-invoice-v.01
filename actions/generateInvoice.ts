@@ -235,6 +235,7 @@ export const generateInvoice = async (formData: FormData) => {
                 </div>
             </div>
             <div>
+            <p>Datum: ${date} / Rechnungsnummer: ${invoiceNumber}</p>
             </div>
             <table>
                 <thead>
