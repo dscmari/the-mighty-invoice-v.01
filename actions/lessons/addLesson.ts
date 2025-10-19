@@ -1,14 +1,7 @@
 "use server";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-
-
-type Lesson = {
-    studentId: number,
-    date: Date
-    description: string
-}
-
+import type { AddLesson } from "@/utils/types";
 
 export const addLesson = async (formData: FormData) => {
     
@@ -31,10 +24,11 @@ export const addLesson = async (formData: FormData) => {
     const studentId = parseInt(studentIdInput);
     const date = new Date(dateInput);
 
-    const newLesson: Lesson = {
+    const newLesson: AddLesson = {
         studentId: studentId,
         date: date,
-        description: lessonDescription
+        description: lessonDescription,
+        invoiceId: null
   };
 
     await prisma.lesson.create({

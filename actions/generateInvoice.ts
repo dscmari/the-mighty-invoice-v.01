@@ -6,7 +6,6 @@ import type { Invoice } from "@/utils/types";
 import type { CreateInvoice } from "@/utils/types";
 
 export const generateInvoice = async (formData: FormData) => {
-
   //customer
   const customerIdString = formData.get("customerId");
   const customerId = parseInt(customerIdString!.toString());
@@ -38,7 +37,7 @@ export const generateInvoice = async (formData: FormData) => {
   });
 
   //type of invoice
-  const isStudentLesson = lessons.length > 0
+  const isStudentLesson = lessons.length > 0;
 
   //namasteItems
   const descriptions = formData.getAll("description");
@@ -78,8 +77,8 @@ export const generateInvoice = async (formData: FormData) => {
   //invoice
   const latestInvoice = await prisma.invoice.findFirst({
     orderBy: {
-      id: "desc"
-    }
+      id: "desc",
+    },
   });
 
   const currentYear = new Date().getFullYear();
@@ -101,11 +100,23 @@ export const generateInvoice = async (formData: FormData) => {
   const newInvoice: CreateInvoice = {
     invoiceNumber: invoiceNumber,
     customerId: customerId,
-    createdAt: new Date()
+    createdAt: new Date(),
   };
 
-  await prisma.invoice.create({
-    data: newInvoice
+  const newInvoiceRecord = await prisma.invoice.create({
+    data: newInvoice,
+  });
+
+  //mark lessons as part of an invoice
+  await prisma.lesson.updateMany({
+    where: {
+      id: {
+        in: lessonIds,
+      },
+    },
+    data : {
+      invoiceId : newInvoiceRecord.id
+    }
   });
 
   //date
@@ -254,11 +265,12 @@ export const generateInvoice = async (formData: FormData) => {
                                 <td class="text-right">${
                                   totalLessons * price
                                 }€</td>
-                            </tr>`
+                            </tr>`;
                             })
                             .join("")
-                        : rows.map((row, index) => {
-                            return `
+                        : rows
+                            .map((row, index) => {
+                              return `
                             <tr>
                                 <td class="text-right">${
                                   index + 1
@@ -269,18 +281,14 @@ export const generateInvoice = async (formData: FormData) => {
                                 <td class="text-right">${parseDate(
                                   dates[index]
                                 )}</td>
-                                <td class="text-right">${
-                                  quantities[index]
-                                }</td>
-                                <td class="text-right">${
-                                  prices[index]
-                                }€</td>
+                                <td class="text-right">${quantities[index]}</td>
+                                <td class="text-right">${prices[index]}€</td>
                                 <td class="text-right">${
                                   quantities[index] * prices[index]
                                 }€</td>
-                            </tr>`
-                          })
-                          .join("")
+                            </tr>`;
+                            })
+                            .join("")
                     }
                 </tbody>
             </table>
@@ -288,7 +296,11 @@ export const generateInvoice = async (formData: FormData) => {
             <table class="totals-table">
                 <tr class="subtotal">
                     <th class="text-right">Netto Gesamt:</th>
-                    <td class="text-right"> ${isStudentLesson ? totalPriceStudentLessons : totalPriceNamasteInvoice}€</td>
+                    <td class="text-right"> ${
+                      isStudentLesson
+                        ? totalPriceStudentLessons
+                        : totalPriceNamasteInvoice
+                    }€</td>
                 </tr>
        
             </table>

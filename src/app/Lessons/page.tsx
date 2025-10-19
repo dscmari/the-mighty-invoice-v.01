@@ -1,8 +1,8 @@
 import React from "react";
-import AddLessonForm from "../components/forms/AddLessonForm";
 import prisma from "@/lib/prisma";
-import GenerateInvoiceForm from "../components/forms/StudentInvoiceForm"
 import AddCustomerForm from "../components/forms/AddCustomerForm";
+import AddLessonForm from "../components/forms/AddLessonForm";
+import StudentInvoiceForm from "../components/forms/StudentInvoiceForm";
 
 export default async function Page() {
   const customers = await prisma.customer.findMany({
@@ -23,7 +23,7 @@ export default async function Page() {
       </div>
       <div className="p-2">
         <p className="m-4 text-xl">Customers</p>
-        <GenerateInvoiceForm customers={customers} />
+        <StudentInvoiceForm customers={customers} />
       </div>
     </div>
   );

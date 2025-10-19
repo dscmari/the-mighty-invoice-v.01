@@ -23,6 +23,8 @@ model Lesson {
   id        Int      @id @default(autoincrement())
   student   Customer @relation(fields: [studentId], references: [id])
   studentId Int
+  invoice   Invoice?  @relation(fields: [invoiceId], references: [id])
+  invoiceId Int?
   date      DateTime
   description String?
 }
@@ -33,4 +35,5 @@ model Invoice {
   customer   Customer  @relation(fields: [customerId], references: [id])
   customerId Int     
   createdAt  DateTime  @default(now())
+  lessons Lesson[]
 }
