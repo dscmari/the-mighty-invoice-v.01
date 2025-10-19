@@ -20,7 +20,10 @@ export const generateInvoice = async (formData: FormData) => {
   const customerPLZ = customer?.plz;
 
   //lessons
+  console.log(formData)
   const lessonIdsString = formData.getAll("lessonIds"); //returns [] when no lessonIds exist in form
+
+  console.log(lessonIdsString)
   const lessonIds = lessonIdsString.map((e) => parseInt(e!.toString()));
   const lessons = await prisma.lesson.findMany({
     where: {
@@ -28,6 +31,10 @@ export const generateInvoice = async (formData: FormData) => {
         in: lessonIds,
       },
     },
+  });
+ 
+  lessons.sort((a, b) => {
+    return a.id - b.id;
   });
 
   //type of invoice
@@ -66,7 +73,7 @@ export const generateInvoice = async (formData: FormData) => {
     return 0; // Return 0 if either is not a valid number
   });
 
-  const totalPriceNamasteInvoice = rowTotals.reduce((sum, currentTotal) => sum + currentTotal, 0);
+  const totalPriceNamasteInvoice = rowTotals.reduce((sum, currentTotal) => sum + currentTotal, 0).toFixed(2);
 
   //invoice
   const latestInvoice = await prisma.invoice.findFirst({
@@ -127,20 +134,17 @@ export const generateInvoice = async (formData: FormData) => {
             body {
                 font-family: 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
                 margin: 0;
-                padding: 2cm;
+                padding: 0;
                 line-height: 1.4;
                 color: #333;
-                background-color: #f9f9f9;
+                background-color: #fff; 
                 font-size: 10pt;
             }
 
             .container {
                 max-width: 21cm; /* A4 width */
-                margin: 0 auto;
-                background-color: #fff;
-                padding: 0 2cm 0 2cm;
-                border: 1px solid #eee;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+                margin: 0;
+                padding: 0 1.5cm 0 1.5cm;
             }
 
             .company-info {
@@ -153,7 +157,7 @@ export const generateInvoice = async (formData: FormData) => {
                 display: flex;
                 justify-content: space-between;
                 align-items: flex-start;
-                margin-bottom: 2rem;
+                margin-bottom: 0rem;
             }
 
             .header h1 {
@@ -191,6 +195,9 @@ export const generateInvoice = async (formData: FormData) => {
             .text-right {
                 text-align: right;
             }
+            .text-left {
+                
+            }
 
             .totals-table {
                 width: 40%; /* Adjust as needed */
@@ -199,10 +206,6 @@ export const generateInvoice = async (formData: FormData) => {
                 margin-top: 20px;
             }
 
-            .regards {
-                margin-top: 1rem;
-                margin-bottom:0.5rem;
-            }
         </style>
     </head>
     <body>
@@ -221,6 +224,7 @@ export const generateInvoice = async (formData: FormData) => {
                 </div>
             </div>
             <div>
+              <p>Datum: ${date} / Rechnungsnummer: INV-${invoiceNumber}</p>
             </div>
             <table>
                 <thead>
@@ -241,7 +245,7 @@ export const generateInvoice = async (formData: FormData) => {
                               return `
                             <tr>
                                 <td class="text-right">${index + 1}</td>
-                                <td class="text-right">${lesson.description? lesson.description : "Programmierkurs"}</td>
+                                <td class="text-rigth">${lesson.description? lesson.description : "Programmierkurs"}</td>
                                 <td class="text-right">${parseDate(
                                   lesson.date
                                 )}</td>
@@ -259,7 +263,7 @@ export const generateInvoice = async (formData: FormData) => {
                                 <td class="text-right">${
                                   index + 1
                                 }</td>
-                                <td class="text-right">${
+                                <td class="text-left">${
                                   descriptions[index]
                                 }</td>
                                 <td class="text-right">${parseDate(
@@ -289,16 +293,15 @@ export const generateInvoice = async (formData: FormData) => {
        
             </table>
             <p>
-                Ich bin Kleinunternehmer und somit nach §19 Abs. 1 UStG nicht mehrwertsteuerpflichtig, weshalb ich keinen USt-Ausweis habe. Bitte überweisen Sie den Betrag innerhalb von 14 Tagen auf folgendes Konto:
+                Ich bin Kleinunternehmer und somit nach §19 Abs. 1 UStG nicht umsatzsteuerpflichtig, weshalb ich keinen USt-Ausweis habe. Bitte überweisen Sie den Betrag innerhalb von 14 Tagen auf folgendes Konto:
             </p>
-            <ul style="line-height: 1.1; margin-top: 1.5rem; margin-bottom: 1.5rem;">
+            <ul style="line-height: 1.1; margin-top: 0.5rem; margin-bottom: 2rem;">
                 <li>Marian Nökel</li>
                 <li>N26 Bank AG</li>
                 <li>IBAN: DE94 1001 1001 2587 6446 18</li>
                 <li>BIC: NTSBDEB1XXX</li>
             </ul>
-            <p class="regards">Mit freundlichen Grüßen</p>
-            <p style="margin-bottom: 2rem;">Marian Nökel</p>
+            <p>Mit freundlichen Grüßen<br><br>Marian Nökel</p>
         </div>
     </body>
     </html>

@@ -21,6 +21,10 @@ type CustomerProps = {
 export default function Page({ customers }: CustomerProps) {
   const [lessonIds, setLessonIds] = useState<string[]>([]);
 
+  const sortByDate = (a: Lesson, b: Lesson) => {
+    return a.date.getTime() - b.date.getTime()
+  }
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const checkedLessonId = event.target.value;
     console.log(checkedLessonId);
@@ -48,7 +52,7 @@ export default function Page({ customers }: CustomerProps) {
             </ol>
           </div>
           <div>
-            {customer.lessons.map((lesson: Lesson) => (
+            {customer.lessons.sort(sortByDate).map((lesson: Lesson) => (
               <ol
                 key={lesson.id}
                 className={`flex gap-4 border-b p-1 relative hover:bg-orange-200 ${
